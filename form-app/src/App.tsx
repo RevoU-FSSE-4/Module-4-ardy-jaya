@@ -1,7 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { FormPage } from './form';
+import FormPage from './form';
+
 
 function App() {
   return (
