@@ -60,8 +60,11 @@ const FormPage: React.FC = () => {
     // Handle form submission
     alert(JSON.stringify(values, null, 2));
 
-    // Clear form data
+    // Reset form values to initial state
     actions.resetForm();
+
+    // Set submitted state to true
+    window.location.reload();
   };
 
   return (
@@ -71,33 +74,21 @@ const FormPage: React.FC = () => {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values, actions) => handleSubmit(values, actions)}
+          onSubmit={handleSubmit}
         >
-          {({ isSubmitting, values }) => (
+          {({ isSubmitting, isValid, values }) => (
             <Form>
               {currentStep === 1 && (
-                <StepOne values={values} next={handleNextStep} />
+                <StepOne values={values} next={handleNextStep} isValid={isValid} />
               )}
               {currentStep === 2 && (
-                <StepTwo
-                  values={values}
-                  prev={handlePrevStep}
-                  next={handleNextStep}
-                />
+                <StepTwo values={values} prev={handlePrevStep} next={handleNextStep} />
               )}
               {currentStep === 3 && (
-                <StepThree
-                  values={values}
-                  prev={handlePrevStep}
-                  next={handleNextStep}
-                />
+                <StepThree values={values} prev={handlePrevStep} next={handleNextStep} />
               )}
               {currentStep === 4 && (
-                <StepFour
-                  values={values}
-                  prev={handlePrevStep}
-                  handleSubmit={handleSubmit}
-                />
+                <StepFour values={values} prev={handlePrevStep} handleSubmit={handleSubmit} />
               )}
             </Form>
           )}
@@ -107,162 +98,154 @@ const FormPage: React.FC = () => {
   );
 };
 
-// StepOne component for the first step of the form
-const StepOne: React.FC<{ values: FormData; next: () => void }> = ({
-  values,
-  next,
-}) => (
-  <>
-    <h1 className="text-xl font-bold mb-4">Step 1: Personal Information</h1>
-    <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">
-      Full Name:
-    </label>
-    <Field
-      type="text"
-      name="fullName"
-      placeholder="Full Name"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="fullName"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
 
-    <label htmlFor="dob" className="block text-gray-700 text-sm font-bold mb-2">
-      Date of Birth:
-    </label>
-    <Field
-      type="date"
-      name="dob"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="dob"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
+interface StepOneProps {
+  values: FormData;
+  next: () => void;
+  isValid: boolean;
+}
 
-    <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-      Email:
-    </label>
-    <Field
-      type="email"
-      name="email"
-      placeholder="Email"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="email"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
+const StepOne: React.FC<StepOneProps> = ({ values, next, isValid }) => {
+  // Custom validation function to check if all personal information fields are filled
+  const isPersonalInfoValid = () => {
+    return values.fullName.trim() !== "" && values.dob.trim() !== "" && values.email.trim() !== "";
+  };
 
-    <button
-      type="button"
-      onClick={next}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
-    >
-      Next
-    </button>
-  </>
-);
+  return (
+    <>
+      <h1 className="text-xl font-bold mb-4">Step 1: Personal Information</h1>
+      <label htmlFor="fullName" className="block text-gray-700 text-sm font-bold mb-2">
+        Full Name:
+      </label>
+      <Field
+        type="text"
+        name="fullName"
+        placeholder="Full Name"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="fullName" component="div" className="text-red-500 text-xs italic" />
 
-// StepTwo component for the second step of the form
+      <label htmlFor="dob" className="block text-gray-700 text-sm font-bold mb-2">
+        Date of Birth:
+      </label>
+      <Field
+        type="date"
+        name="dob"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="dob" component="div" className="text-red-500 text-xs italic" />
+
+      <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
+        Email:
+      </label>
+      <Field
+        type="email"
+        name="email"
+        placeholder="Email"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="email" component="div" className="text-red-500 text-xs italic" />
+
+      <button
+        type="button"
+        onClick={next}
+        disabled={!isPersonalInfoValid()}
+        className={`${!isPersonalInfoValid() ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4`}
+        >
+        Next
+      </button>
+    </>
+  );
+};
+
+
 const StepTwo: React.FC<{ values: FormData; prev: () => void; next: () => void }> = ({
   values,
   prev,
   next,
-}) => (
-  <>
-    <h2 className="text-xl font-bold mb-4">Step 2: Address Information</h2>
-    <label htmlFor="street" className="block text-gray-700 text-sm font-bold mb-2">
-      Street Address:
-    </label>
-    <Field
-      type="text"
-      name="street"
-      placeholder="Street Address"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="street"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
+}) => {
+  const isAddressValid = () => {
+    return values.street.trim() !== "" && values.city.trim() !== "" && values.state.trim() !== "" && values.zipCode.trim() !== "";
+  };
 
-    <label htmlFor="city" className="block text-gray-700 text-sm font-bold mb-2">
-      City:
-    </label>
-    <Field
-      type="text"
-      name="city"
-      placeholder="City"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="city"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
+  return (
+    <>
+      <h2 className="text-xl font-bold mb-4">Step 2: Address Information</h2>
+      <label htmlFor="street" className="block text-gray-700 text-sm font-bold mb-2">
+        Street Address:
+      </label>
+      <Field
+        type="text"
+        name="street"
+        placeholder="Street Address"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="street" component="div" className="text-red-500 text-xs italic" />
 
-    <label htmlFor="state" className="block text-gray-700 text-sm font-bold mb-2">
-      State:
-    </label>
-    <Field
-      type="text"
-      name="state"
-      placeholder="State"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="state"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
+      <label htmlFor="city" className="block text-gray-700 text-sm font-bold mb-2">
+        City:
+      </label>
+      <Field
+        type="text"
+        name="city"
+        placeholder="City"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="city" component="div" className="text-red-500 text-xs italic" />
 
-    <label htmlFor="zipCode" className="block text-gray-700 text-sm font-bold mb-2">
-      Zip Code:
-    </label>
-    <Field
-      type="text"
-      name="zipCode"
-      placeholder="Zip Code"
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    />
-    <ErrorMessage
-      name="zipCode"
-      component="div"
-      className="text-red-500 text-xs italic"
-    />
+      <label htmlFor="state" className="block text-gray-700 text-sm font-bold mb-2">
+        State:
+      </label>
+      <Field
+        type="text"
+        name="state"
+        placeholder="State"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="state" component="div" className="text-red-500 text-xs italic" />
 
-    <button
-      type="button"
-      onClick={prev}
-      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 mr-2"
-    >
-      Previous
-    </button>
-    <button
-      type="button"
-      onClick={next}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
-    >
-      Next
-    </button>
-  </>
-);
+      <label htmlFor="zipCode" className="block text-gray-700 text-sm font-bold mb-2">
+        Zip Code:
+      </label>
+      <Field
+        type="text"
+        name="zipCode"
+        placeholder="Zip Code"
+        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      />
+      <ErrorMessage name="zipCode" component="div" className="text-red-500 text-xs italic" />
 
-// StepThree component for the final step of the form
+      <button
+        type="button"
+        onClick={prev}
+        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 mr-2"
+      >
+        Previous
+      </button>
+      <button
+        type="button"
+        onClick={next}
+        disabled={!isAddressValid()}
+        className={`${!isAddressValid() ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4`}
+      >
+        Next
+      </button>
+    </>
+  );
+};
+
 const StepThree: React.FC<{ values: FormData; prev: () => void; next: () => void }> = ({
   values,
   prev,
   next,
-}) => (
-  <>
-    <h3 className="text-xl font-bold mb-4">Step 3: Account Information</h3>
+}) => {
+  const isAccountValid = () => {
+    return values.username.trim() !== "" && values.password.trim() !== "";
+  };
 
-    <div className="mb-4">
+  return (
+    <>
+      <h3 className="text-xl font-bold mb-4">Step 3: Account Information</h3>
       <label htmlFor="username" className="block text-gray-700 text-sm font-bold mb-2">
         Username:
       </label>
@@ -272,14 +255,8 @@ const StepThree: React.FC<{ values: FormData; prev: () => void; next: () => void
         placeholder="Username"
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
-      <ErrorMessage
-        name="username"
-        component="div"
-        className="text-red-500 text-xs italic"
-      />
-    </div>
+      <ErrorMessage name="username" component="div" className="text-red-500 text-xs italic" />
 
-    <div className="mb-6">
       <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
         Password:
       </label>
@@ -289,358 +266,68 @@ const StepThree: React.FC<{ values: FormData; prev: () => void; next: () => void
         placeholder="Password"
         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
       />
-      <ErrorMessage
-        name="password"
-        component="div"
-        className="text-red-500 text-xs italic"
-      />
-    </div>
+      <ErrorMessage name="password" component="div" className="text-red-500 text-xs italic" />
 
-    <button
-      type="button"
-      onClick={prev}
-      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 mr-2"
-    >
-      Previous
-    </button>
-    <button
-      type="button"
-      onClick={next}
-      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
-    >
-      Next
-    </button>
-  </>
-);
+      <button
+        type="button"
+        onClick={prev}
+        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 mr-2"
+      >
+        Previous
+      </button>
+      <button
+        type="button"
+        onClick={next}
+        disabled={!isAccountValid()}
+        className={`${!isAccountValid() ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700'} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4`}
+      >
+        Next
+      </button>
+    </>
+  );
+};
 
-// StepFour component for previewing form data
-const StepFour: React.FC<{ values: FormData; prev: () => void; handleSubmit: (values: FormData, actions: any) => void }> = ({
-  values,
-  prev,
-  handleSubmit,
-}) => (
-  <>
-    <h3 className="text-xl font-bold mb-4">Step 4: Review Your Information</h3>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">Full Name:</p>
-      <p className="text-gray-800">{values.fullName}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">Date of Birth:</p>
-      <p className="text-gray-800">{values.dob}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">Email:</p>
-      <p className="text-gray-800">{values.email}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">Street Address:</p>
-      <p className="text-gray-800">{values.street}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">City:</p>
-      <p className="text-gray-800">{values.city}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">State:</p>
-      <p className="text-gray-800">{values.state}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">Zip Code:</p>
-      <p className="text-gray-800">{values.zipCode}</p>
-    </div>
-
-    <div className="mb-4">
-      <p className="text-gray-700 text-sm font-bold mb-1">Username:</p>
-      <p className="text-gray-800">{values.username}</p>
-    </div>
-
-    <div className="mb-6">
-      <p className="text-gray-700 text-sm font-bold mb-1">Password:</p>
-      <p className="text-gray-800">********</p>
-    </div>
-
-    <button
-      type="button"
-      onClick={prev}
-      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 mr-2"
-    >
-      Previous
-    </button>
-    <button
-      type="button"
-      onClick={() => handleSubmit(values)}
-      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
-    >
-      Submit
-    </button>
-  </>
-);
+const StepFour: React.FC<{
+  values: FormData;
+  prev: () => void;
+  handleSubmit: (values: FormData, actions: any) => void;
+}> = ({ values, prev, handleSubmit }) => {
+  return (
+    <>
+      <h3 className="text-xl font-bold mb-4">Step 4: Review Your Information</h3>
+      <div className="mb-4">
+        <h4 className="font-bold">Personal Information:</h4>
+        <p>Full Name: {values.fullName}</p>
+        <p>Date of Birth: {values.dob}</p>
+        <p>Email: {values.email}</p>
+      </div>
+      <div className="mb-4">
+        <h4 className="font-bold">Address Information:</h4>
+        <p>Street: {values.street}</p>
+        <p>City: {values.city}</p>
+        <p>State: {values.state}</p>
+        <p>Zip Code: {values.zipCode}</p>
+      </div>
+      <div className="mb-4">
+        <h4 className="font-bold">Account Information:</h4>
+        <p>Username: {values.username}</p>
+        <p>Password: {values.password}</p>
+      </div>
+      <button
+        type="button"
+        onClick={prev}
+        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4 mr-2"
+      >
+        Previous
+      </button>
+      <button
+        type="submit"
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+      >
+        Submit
+      </button>
+    </>
+  );
+};
 
 export default FormPage;
-
-
-
-
-// const validationSchema = Yup.object().shape({
-//     fullName: Yup.string().required("Full name is required"),
-//     email: Yup.string().email("Invalid email").required("Email is required"),
-//     dob: Yup.date().max(new Date(), "Date of birth cannot be in the future").required("Date of birth is required"),
-//     street: Yup.string().required("Street address is required"),
-//     city: Yup.string().required("City is required"),
-//     state: Yup.string().required("State is required"),
-//     zipCode: Yup.string().required("Zip code is required"),
-//     username: Yup.string().required("Username is required"),
-//     password: Yup.string().required("Password is required"),
-// });
-
-// const initialValues = {
-//     fullName: "",
-//     dob: "",
-//     email: "",
-//     street: "",
-//     city: "",
-//     state: "",
-//     zipCode: "",
-//     username: "",
-//     password: "",
-// };
-
-// interface FormData {
-//     firstName: string;
-//     lastName: string;
-//     email: string;
-//   }
-
-// const data = {
-//   fullName: "",
-//   dob: "",
-//   email: "",
-//   street: "",
-//   city: "",
-//   state: "",
-//   zipCode: "",
-//   username: "",
-//   password: "",
-// };
-
-// export default function FormPage() {
-//   const [data, setData] = useState({
-//     fullName: "",
-//     dob: "",
-//     email: "",
-//     street: "",
-//     city: "",
-//     state: "",
-//     zipCode: "",
-//     username: "",
-//     password: "",
-//   });
-//   const [currentStep, setCurrentStep] = useState(0);
-
-//   const handleNextStep = (newData) => {setData(prev => (...prev, ...newData))
-//     setCurrentStep (prev => prev + 1)
-//   }
-
-//   const handlePrevStep = (newData) => {setData(prev => (...prev, ...newData))
-//     setCurrentStep (prev => prev - 1)
-//   }
-
-// const steps = [<StepOne next={handleNextStep} data={data}/>,
-// <StepTWo  next={handleNextStep} prev={} data={data}/>]
-//   return (
-//     <div className="formPage">
-//       {steps[currentStep]}
-//     </div>
-//   );
-// }
-
-// const StepOne = () => {
-//   return (
-//     <Formik initialValues={props.data}>
-//       {() => (
-//         <Form>
-//           <label htmlFor="fullName">Full Name </label>
-//           // <Field name="fullName" placeholder="Full Name" />
-//           // <br />
-//           // <label htmlFor="email">Email </label>
-//           // <Field name="email" placeholder="Email" />
-//           // <br />
-//           // <label htmlFor="dob">Date of Birth </label>
-//           // <Field name="dob" type="date" />
-//           // <br />
-//           // <button type="submit">next</button>
-//         </Form>
-//       )}
-//     </Formik>
-//   );
-// };
-
-// const StepTWo = () => {
-//   return (
-//     <Formik>
-//       {() => (
-//         <Form>
-//           <label htmlFor="fullName">Full Name </label>
-//           // <Field name="fullName" placeholder="Full Name" />
-//           // <br />
-//           // <label htmlFor="email">Email </label>
-//           // <Field name="email" placeholder="Email" />
-//           // <br />
-//           // <label htmlFor="dob">Date of Birth </label>
-//           // <Field name="dob" type="date" />
-//           // <br />
-//           <button type="submit">preview</button>
-//           // <button type="submit">next</button>
-//         </Form>
-//       )}
-//     </Formik>
-//   );
-// };
-
-// export const FormPage = () => (
-//   <div>
-//     <h1>Sign Up</h1>
-//     <Formik
-//       initialValues={{
-//         fullName: "",
-//         dob: "",
-//         email: "",
-//         street: "",
-//         city: "",
-//         state: "",
-//         zipCode: "",
-//         username: "",
-//         password: "",
-//       }}
-//       onSubmit={async (values) => {
-//         alert(JSON.stringify(values));
-//       }}
-//       validationSchema={}
-//     >
-//       <Form>
-//         <label htmlFor="fullName">Full Name </label>
-//         <Field name="fullName" placeholder="Full Name" />
-//         <br />
-//         <label htmlFor="email">Email </label>
-//         <Field name="email" placeholder="Email" />
-//         <br />
-//         <label htmlFor="dob">Date of Birth </label>
-//         <Field name="dob" type="date" />
-//         <br />
-//         <button type="submit">Submit</button>
-//       </Form>
-
-//     </Formik>
-//   </div>
-// );
-
-// export function FormPage() {
-//   const [name, setName] = useState<string>("");
-//   const [errorName, setErrorName] = useState<string>("");
-//   const [email, setEmail] = useState<string>("");
-//   const [errorEmail, setErrorEmail] = useState<string>("");
-
-//   function handleSubmit(event: any) {
-//     event.preventDefault();
-//     alert(name+email);
-//   }
-//   return (
-//     <div>
-//       <form onSubmit={handleSubmit}>
-//         <label>First name: </label>
-//         <input
-//           type="text"
-//           placeholder="Fill Your Name"
-//           onChange={(event) => {
-//             const value = event.target.value;
-//             if (value.length < 3) {
-//               setErrorName("Fill Your Name");
-//             } else {
-//               setErrorName("");
-//             }
-//             setName(event.target.value);
-//           }}
-//         />
-//         <br />
-//         <> {errorName} </>
-//         <br />
-//         <label>Email: </label>
-//         <input
-//           type="email"
-//           placeholder="Fill Your Name"
-//           onChange={(event) => {
-//             const value = event.target.value;
-//             if (value.length < 5) {
-//               setErrorEmail("Fill Your Email");
-//             } else {
-//               setErrorEmail("");
-//             }
-//             setEmail(event.target.value);
-//           }}
-//         />
-//         <br />
-//         <> {errorEmail} </>
-//         <br />
-//         <button disabled={errorEmail !== "" || errorName !== ""}>
-//           {" "}
-//           Submit{" "}
-//         </button>
-//       </form>
-//     </div>
-//   );
-// }
-
-// const SignUpSchema = Yup.object().shape({
-//   fullName: Yup.string()
-//     .min(5, "Too Short!")
-//     .max(50, "Too Long!")
-//     .required("Required"),
-//   email: Yup.string()
-//     .min(2, "Too Short!")
-//     .max(50, "Too Long!")
-//     .required("Required"),
-//   dob: Yup.string().email("Invalid email").required("Required"),
-// });
-
-// export const Basic = () => (
-//   <div>
-//     <h1>Sign Up</h1>
-//     <Formik
-//       initialValues={{
-//         fullName: "",
-//         email: "",
-//         dob: "",
-//       }}
-//       validationSchema={SignUpSchema}
-
-//       onSubmit={values => {
-//         // same shape as initial values
-//         console.log(values);
-//     }}
-//     >
-//       <Form>
-//         <label htmlFor="fullName">Full Name </label>
-//         <Field id="fullName" name="fullName" placeholder="Full Name" />
-//         <br />
-//         <label htmlFor="email">Email </label>
-//         <Field id="email" name="email" placeholder="email" />
-//         <br />
-//         <label htmlFor="dob">Date of Birth </label>
-//         <Field id="dob" name="dob" type="date" />
-//         <br />
-//         <div>
-//         <button>Submit</button>
-//         <input type="text" onChange={}
-//         </div>
-//       </Form>
-//     </Formik>
-//   </div>
-// );
