@@ -1,0 +1,65 @@
+// import React from 'react';
+// import { Formik, Form, Field, ErrorMessage } from 'formik';
+// import * as Yup from 'yup';
+
+// // Validation schema for the forms
+// const validationSchema = Yup.object({
+//     email: Yup.string().email('Invalid email address').required('Email is required'),
+//     password: Yup.string().required('Password is required'),
+// });
+
+// // Initial form values
+// const initialValues = {
+//     email: '',
+//     password: '',
+// };
+
+// const LoginForm = () => {
+//     const handleSubmit = async (values: any) => {
+//         try {
+//             const response = await fetch('https://gorest.co.in/public-api/users/login', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify(values),
+//             });
+
+//             if (response.ok) {
+//                 const data = await response.json();
+//                 console.log('Login successful:', data);
+//             } else {
+//                 const errorData = await response.json();
+//                 throw new Error(errorData.data.message || 'Login failed');
+//             }
+//         } catch (error: any) { // Catching error as any type
+//             console.error('Login error:', error.message);
+//         }
+//     };
+//     return (
+//         <Formik
+//             initialValues={initialValues}
+//             validationSchema={validationSchema}
+//             onSubmit={handleSubmit}
+//         >
+//             <Form className="w-full max-w-md mx-auto p-8 bg-white rounded-lg shadow-lg">
+//                 <h1 className="text-2xl font-bold mb-4">Login</h1>
+//                 <div className="mb-4">
+//                     <label htmlFor="email" className="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+//                     <Field type="email" id="email" name="email" className="border border-gray-300 rounded p-2 w-full" />
+//                     <ErrorMessage name="email" component="div" className="text-red-500 text-xs" />
+//                 </div>
+//                 <div className="mb-4">
+//                     <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+//                     <Field type="password" id="password" name="password" className="border border-gray-300 rounded p-2 w-full" />
+//                     <ErrorMessage name="password" component="div" className="text-red-500 text-xs" />
+//                 </div>
+//                 <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full">
+//                     Login
+//                 </button>
+//             </Form>
+//         </Formik>
+//     );
+// };
+
+// export default LoginForm;
