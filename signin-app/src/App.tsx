@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { HomePage, About, Home, NotFound } from "./homepage";
@@ -10,6 +10,9 @@ import PrivateRoute from "./privateRouter";
 import InsideLogin from "./insideLogin";
 
 function App() {
+  
+
+
   return (
     <div className="App">
       <header className="App-header">

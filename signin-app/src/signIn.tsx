@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import 'tailwindcss/tailwind.css';
@@ -16,15 +16,22 @@ const SignInForm: React.FC = () => {
         email: Yup.string().email('Invalid email address').required('Email is required'),
         password: Yup.string().required('Password is required'),
     });
+    const navigate = useNavigate();
+    // const [user, setUser] = useState<string>('');
 
-        const navigate = useNavigate();
+    const handleSubmit = (values: any) => {
+        localStorage.setItem('islogin', 'true');
+        localStorage.setItem('user', values.email);
+        navigate('/insideLogin');
+    };
 
-        const handleSubmit = (values: any) => {
-           localStorage.setItem('islogin', 'true');
-            navigate('/insideLogin');
-        };
+    const handleProfile = () => {
+        const userEmail = localStorage.getItem('user');
+    
+        console.log('User Email:', userEmail);
+    };
 
-
+  
     return (
         <Formik
             initialValues={initialValues}
