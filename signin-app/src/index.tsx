@@ -20,3 +20,19 @@ root.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+// async function handleSubmit(e:any){e.preventDefault();
+//   const body = { "name":name,"email": email,"password": password };
+//   const option = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+// }
+
+// try {
+//   const response = await fetch('https://library-crud-sample.vercel.app/api/user/register', option);
+//   if (!response.ok) {
+//   throw new Error('An error occurred');
+//   }
+//   const data = await response.json();
+//   console.log(data);
+//   setTimeout(() => {
+//     alert('Account created successfully');
+//     navigate('/insideLogin');
+//     1000});

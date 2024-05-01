@@ -1,62 +1,130 @@
-import React, { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import 'tailwindcss/tailwind.css';
-import { BrowserRouter, Navigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import FetchData from "./fetch";
+import axios from "axios";
 
-import { useNavigate } from 'react-router-dom';
+interface SignInForm {
+    email: string;
+    password: string;
+}
 
-const SignInForm: React.FC = () => {
+interface ResponseLogin {
+    token: string;
+}
+
+export default function SignInForm() {
     const initialValues = {
-        email: '',
-        password: '',
+        email: "",
+        password: "",
     };
 
     const validationSchema = Yup.object({
-        email: Yup.string().email('Invalid email address').required('Email is required'),
-        password: Yup.string().required('Password is required'),
+        email: Yup.string()
+            .email("Invalid email address")
+            .required("Email is required"),
+        password: Yup.string().required("Password is required"),
     });
+
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
     const navigate = useNavigate();
-    // const [user, setUser] = useState<string>('');
 
-    const handleSubmit = (values: any) => {
-        localStorage.setItem('islogin', 'true');
-        localStorage.setItem('user', values.email);
-        navigate('/insideLogin');
+    const handleSubmit = async (event: any) => {
+        event.preventDefault();
+        console.log("trigger submit");
+        const newLogin: SignInForm = {
+            email: email,
+            password: password,
+        };
+
+        try {
+            const response = await axios.post<ResponseLogin>(
+                `https://library-crud-sample.vercel.app/api/category/create`,
+                newLogin,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+
+            if (response) {
+                const data: ResponseLogin = response.data;
+                localStorage.setItem("token", data.token);
+                alert("success login!");
+                navigate("/insideLogin");
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const handleProfile = () => {
-        const userEmail = localStorage.getItem('user');
-    
-        console.log('User Email:', userEmail);
-    };
-
-  
     return (
-        <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={handleSubmit}
-        >
-            <Form className="max-w-sm mx-auto">
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-gray-700">Email</label>
-                    <Field type="email" id="email" name="email" className="mt-1 p-1 border border-gray-300 rounded-sm w-full text-black" />
-                    <ErrorMessage name="email" component="div" className="text-red-500" />
-                </div>
+        <div>
+            <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={handleSubmit}
+            >
+                <Form className="flex flex-col space-y-2">
+                    <div>
+                        <label
+                            htmlFor="email"
+                            className="text-white-700 font-bold text-base"
+                            style={{ fontSize: "20px", width: "100px" }}
+                        >
+                            Email
+                        </label>
+                        <br />
+                        <Field
+                            type="email"
+                            id="email"
+                            name="email"
+                            className="border border-gray-300 p-2 rounded-md text-black text-base"
+                            style={{ width: "200px" }}
+                        />
+                        <ErrorMessage
+                            name="email"
+                            component="div"
+                            className="text-red-500 text-sm"
+                        />
+                    </div>
 
-                <div className="mb-4">
-                    <label htmlFor="password" className="block text-gray-700">Password</label>
-                    <Field type="password" id="password" name="password" className="mt-1 p-1 border border-gray-300 rounded-sm w-full text-black" />
-                    <ErrorMessage name="password" component="div" className="text-red-500" />
-                </div>
-
-                <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-sm">
-                    Log In
-                </button>
-            </Form>
-        </Formik>
+                    <div>
+                        <label
+                            htmlFor="password"
+                            className="text-white-700 font-bold text-base"
+                            style={{ fontSize: "calc(1rem + 5px)", width: "100px" }}
+                        >
+                            Password
+                        </label>
+                        <br />
+                        <Field
+                            type="password"
+                            id="password"
+                            name="password"
+                            className="border border-gray-300 p-2 rounded-md text-black text-base"
+                            style={{ width: "200px" }}
+                        />
+                        <ErrorMessage
+                            name="password"
+                            component="div"
+                            className="text-red-500 text-sm"
+                        />
+                    </div>
+<br />
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white py-2 px-4 rounded-md"
+                    >
+                        Submit
+                    </button>
+                </Form>
+            </Formik>
+        </div>
     );
-};
-
-export default SignInForm;
+}

@@ -1,26 +1,42 @@
-import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
+import React, { useState } from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
-const CreateAccount: React.FC = () => {
-  const initialValues = {
-    email: "",
-    password: "",
-  };
+export default function CreateAccount() {
+  const initialValues = { name: 'name', email: 'email', password: 'password' };
 
   const validationSchema = Yup.object({
+    name: Yup.string().required('Name is required'),
     email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .required("Password is required"),
+      .email('Invalid email address')
+      .required('Email is required'),
+    password: Yup.string().required('Password is required'),
   });
 
-  const handleSubmit = (values: any) => {
-    // Handle form submission here
-    console.log(values);
-  };
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  async function handleSubmit(e:any) {
+    e.preventDefault();
+    const body = { "name": name, "email": email, "password": password };
+    const response = await fetch("https://library-crud-sample.vercel.app/api/user/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    setTimeout(() => {
+      if (response.ok) {
+        console.log('Form submitted successfully');
+        navigate('/insideLogin');
+      } else {
+        console.log('Form submission failed');
+      }
+    }, 500);
+  }
 
   return (
     <div className="p-4">
@@ -33,9 +49,29 @@ const CreateAccount: React.FC = () => {
         <Form className="space-y-5">
           <div>
             <label
+              htmlFor="name"
+              className="block font-medium text-sm"
+              style={{ fontSize: '18px' }}
+            >
+              Name
+            </label>
+            <Field
+              type="text"
+              id="name"
+              name="name"
+              className="border border-gray-300 rounded-md p-2 w-full text-black text-sm"
+            />
+            <ErrorMessage
+              name="name"
+              component="div"
+              className="text-red-500 text-sm"
+            />
+          </div>
+          <div>
+            <label
               htmlFor="email"
               className="block font-medium text-sm"
-              style={{ fontSize: "18px" }}
+              style={{ fontSize: '18px' }}
             >
               Email
             </label>
@@ -55,7 +91,7 @@ const CreateAccount: React.FC = () => {
             <label
               htmlFor="password"
               className="block font-medium text-sm"
-              style={{ fontSize: "18px" }}
+              style={{ fontSize: '18px' }}
             >
               Password
             </label>
@@ -81,6 +117,4 @@ const CreateAccount: React.FC = () => {
       </Formik>
     </div>
   );
-};
-
-export default CreateAccount;
+}

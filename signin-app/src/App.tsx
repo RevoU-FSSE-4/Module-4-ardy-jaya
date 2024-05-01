@@ -4,10 +4,12 @@ import "./App.css";
 import { HomePage, About, Home, NotFound } from "./homepage";
 import { BrowserRouter, Router, Route, Link, Routes } from "react-router-dom";
 import Navigation from "./navigation";
-import SignInForm from "./signIn";
+import  SignInForm from "./signIn";
 import CreateAccount from "./newAccount";
 import PrivateRoute from "./privateRouter";
 import InsideLogin from "./insideLogin";
+import NumberVisit from "./numberVisit";
+
 
 function App() {
   
@@ -18,6 +20,7 @@ function App() {
       <header className="App-header">
         <h1>Happening Now...</h1>
         <hr />
+        {/* <InsideLogin /> */}      
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

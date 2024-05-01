@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import NumberVisit from "./numberVisit";
+import { number } from "yup";
 
 const Profile: React.FC = () => {
   const [user] = useState<string | null>(localStorage.getItem("user"));
@@ -9,9 +11,12 @@ const Profile: React.FC = () => {
     <div>
       <div>Profile</div>
       <h1>Hello {user}!</h1>
+      
     </div>
   );
 };
+
+
 
 const InsideLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -19,11 +24,23 @@ const InsideLogin: React.FC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const id = localStorage.getItem("user");
       const response = await fetch(
-        "https://jsonplaceholder.typicode.com/users"
+        `https://library-crud-sample.vercel.app/api/category/${id}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            category_name: "Novel",
+            category_description: "This section is for 18+",
+            is_active: true
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${id}`,
+          },
+        }
       );
       const data = await response.json();
-      console.log(data);
       setData(JSON.stringify(data));
     };
 
@@ -34,7 +51,7 @@ const InsideLogin: React.FC = () => {
     return () => {
       clearInterval(timer);
     };
-  }, [setData]);
+  }, []);
 
   function logout() {
     localStorage.clear();
@@ -48,9 +65,9 @@ const InsideLogin: React.FC = () => {
         <h1>Inside Login</h1>
         <div>data: {data}</div>
       </>
-      <p>
+      {/* <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris euismod,
-      </p>
+      </p> */}
       <br />
       <div>
         <button
@@ -63,5 +80,34 @@ const InsideLogin: React.FC = () => {
     </div>
   );
 };
+
+// const InsideLogin: React.FC = () => {
+//   const navigate = useNavigate();
+//   const [data, setData] = useState<string>("");
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       const response = await fetch(
+//         "https://jsonplaceholder.typicode.com/users"
+//       );
+//       const data = await response.json();
+//       console.log(data);
+//       setData(JSON.stringify(data));
+//     };
+
+//     fetchData();
+
+//     const timer = setInterval(fetchData, 1000);
+
+//     return () => {
+//       clearInterval(timer);
+//     };
+//   }, [setData]);
+
+//   function logout() {
+//     localStorage.clear();
+//     navigate("/");
+//   }
+
+  
 
 export default InsideLogin;
