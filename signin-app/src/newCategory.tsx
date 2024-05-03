@@ -1,8 +1,7 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Formik, Form, Field } from "formik";
-import { ProfileContext } from "./Profile";
-
+import { Navigate, useNavigate } from "react-router-dom";
 
 interface Create {
     category_name: string;
@@ -14,7 +13,7 @@ const Create = () => {
     const [category, setCategory] = useState("");
     const [description, setDescription] = useState("");
     const [isActive, setIsActive] = useState(false || true);
-    const userProfile = useContext(ProfileContext);
+    const navigate = useNavigate();
 
     const handleSubmit = async (values: Create) => {
         const { description, category_name } = values;
@@ -36,6 +35,7 @@ const Create = () => {
             )
             .then((response) => {
                 console.log(response);
+                navigate("/insideLogin");
             })
             .catch((error) => {
                 console.error(error);
@@ -47,7 +47,7 @@ const Create = () => {
             initialValues={{ category_name: "", description: "" }}
             onSubmit={(values: any, actions: any) => {
                 handleSubmit(values);
-                (userProfile as any).setName(values.email);
+                
                 actions.resetForm();
             }}
         >
