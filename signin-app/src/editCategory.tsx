@@ -1,20 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Formik, Form, Field } from "formik";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FetchData from "./fetch";
 
-interface Create {
+interface editCategory {
+  id: string;
   category_name: string;
   description: string;
   is_active: boolean;
 }
 
-const Create = () => {
+const editCategory = () => {
+  const idparam = useParams();
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(false);
   const navigate = useNavigate();
+  const useEffect (() => {
+    const fetchData = async () => { 
+      const response = await FetchData(`https://library-crud-sample.vercel.app/api/category/${idparam}`,
+       { headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}`, }, }); 
+       setCategory(response.data.category_name); setDescription(response.data.description); setIsActive(response.data.is_active); } 
+       fetchData(); }, []);
 
   
 

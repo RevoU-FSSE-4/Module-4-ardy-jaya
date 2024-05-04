@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import { HomePage, About, Home, NotFound } from "./homepage";
 import { BrowserRouter, Router, Route, Link, Routes } from "react-router-dom";
-import Navigation from "./navigation";
 import SignInForm from "./signIn";
 import CreateAccount from "./newAccount";
 import PrivateRoute from "./privateRouter";
 import InsideLogin from "./insideLogin";
-import Create from "./newCategory";
 import { ProfileContext } from "./Profile";
 import GlobalProfile from "./GlobalProfile";
+import Create from "./newCategory";
+
 
 function App() {
   const [userProfile, setUserProfile] = useState("Anonymous User");
- 
+
   const changeUserProfile = (email: string) => {
     setUserProfile(email);
   };

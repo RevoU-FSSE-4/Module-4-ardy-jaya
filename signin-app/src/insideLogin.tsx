@@ -44,23 +44,8 @@ const InsideLogin: React.FC = () => {
   
   
 
-  const gotoEdit = async (id: string) => {
-    try {
-      const response = await axios.get(
-        `https://library-crud-sample.vercel.app/api/category/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log(response.data);
-      // Perform any additional logic with the result
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const gotoEdit = (id: string) => {
+    navigate(`/editCategory/${id}`);
 
  
   const updateCategory = async (id: string) => {
@@ -110,7 +95,7 @@ const InsideLogin: React.FC = () => {
               {values.is_active ? "Active" : "Not Active"}
               <div className="mt-3">
                 <button
-                  onClick={() => gotoEdit(values.id)}
+                 onClick={() => navigate("/editCategory")}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-sm mr-2"
                 >
                   Edit
