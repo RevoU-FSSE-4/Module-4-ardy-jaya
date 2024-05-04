@@ -10,6 +10,8 @@ import { ProfileContext } from "./Profile";
 import GlobalProfile from "./GlobalProfile";
 import Create from "./newCategory";
 import EditCategory from "./editCategory";
+import DeleteCategory from "./deleteCategory";
+
 
 function App() {
   const [userProfile, setUserProfile] = useState("Anonymous User");
@@ -40,6 +42,7 @@ function App() {
               <Route path="/insideLogin" element={<InsideLogin />} />
               <Route path="/newCategory" element={<Create />} />
               <Route path="/editCategory/:id" element={<EditCategory />} />
+              <Route path="/deleteCategory/:id" element={<DeleteCategory />} />
             </Route>
           </Routes>
           <br />

@@ -15,4 +15,5 @@ const FetchData = async (url: string, data?: any) => {
     }
   };
   
+
   export default FetchData;

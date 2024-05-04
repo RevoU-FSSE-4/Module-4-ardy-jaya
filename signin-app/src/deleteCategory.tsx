@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { ButtonHTMLAttributes, useEffect, useState } from "react";
 import { Formik, Form, Field } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import FetchData from "./fetch";
 import Category from "./category";
 
-const EditCategory = () => {
+const DeleteCategory = () => {
   const idParams = useParams();
 
   const [category, setCategory] = useState("");
@@ -41,7 +41,6 @@ const EditCategory = () => {
   }, []);
 
   const handleSubmit = async (event: any) => {
-
     console.log("submitting");
     const newCategory: Category = {
       category_name: category,
@@ -51,7 +50,7 @@ const EditCategory = () => {
     };
 
     const option = {
-      method: "PUT",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -59,19 +58,18 @@ const EditCategory = () => {
       body: JSON.stringify(newCategory),
     };
 
-    const response = await FetchData(
-      "https://library-crud-sample.vercel.app/api/category/update",
-      option
-    );
-    if (response) {
-      alert("Category edited successfully");
-      navigate("/insideLogin");
-    }
-  };
+      const response = await FetchData(
+        `https://library-crud-sample.vercel.app/api/category/${idParams.id}`,
+        option
+      );
+      if (response) {
+        alert("Category Deleted Successfully");
+        navigate("/insideLogin");
+      }
+    };
 
   return (
     <>
-      <h1>Edit Category</h1>
       <Formik
         initialValues={{
           category_name: "",
@@ -84,6 +82,7 @@ const EditCategory = () => {
         }}
       >
         <Form className="max-w mt-5 mb-5">
+        
           <Field
             type="text"
             name="category_name"
@@ -105,20 +104,22 @@ const EditCategory = () => {
             }}
             value={description}
           />
+
           <Field
             type="checkbox"
             name="is_active"
             className="border border-gray-400 rounded-sm px-2 py-1 mr-2 text-black w-8 h-10"
             onChange={(e: any) => {
-              setIsActive(e.target.value);
+              setIsActive(e.target.checked);
             }}
             checked={isActive}
           />
+
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-sm mt 2"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-sm mt-2"
           >
-            Update
+            Delete
           </button>
         </Form>
       </Formik>
@@ -126,4 +127,5 @@ const EditCategory = () => {
   );
 };
 
-export default EditCategory;
+
+export default DeleteCategory;

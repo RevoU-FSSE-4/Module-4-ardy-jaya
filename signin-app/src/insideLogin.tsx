@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ProfileContext } from "./Profile";
-import EditCategory from "./editCategory";
+
+
 
 interface Category {
   id: string;
@@ -99,10 +100,10 @@ const InsideLogin: React.FC = () => {
                   Edit
                 </button>
                 <button
-                  onClick={() => updateCategory(values.id)}
+                  onClick={() => navigate(`/deleteCategory/${values.id}`)}
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded-sm"
                 >
-                  Update
+               Delete
                 </button>
               </div>
             </li>
