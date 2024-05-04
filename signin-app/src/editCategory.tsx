@@ -1,106 +1,129 @@
 import React, { useEffect, useState } from "react";
-
 import { Formik, Form, Field } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import FetchData from "./fetch";
+import Category from "./category";
 
-interface editCategory {
-  id: string;
-  category_name: string;
-  description: string;
-  is_active: boolean;
-}
+const EditCategory = () => {
+  const idParams = useParams();
 
-const editCategory = () => {
-  const idparam = useParams();
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [isActive, setIsActive] = useState(false);
+  const [id, setId] = useState("");
+
   const navigate = useNavigate();
-  const useEffect (() => {
-    const fetchData = async () => { 
-      const response = await FetchData(`https://library-crud-sample.vercel.app/api/category/${idparam}`,
-       { headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}`, }, }); 
-       setCategory(response.data.category_name); setDescription(response.data.description); setIsActive(response.data.is_active); } 
-       fetchData(); }, []);
 
-  
+  useEffect(() => {
+    const fetchData = async () => {
+      const optionGet = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
 
-      const handleSubmit = async (event: any) => {
+      try {
+        const response: Category = await FetchData(
+          `https://library-crud-sample.vercel.app/api/category/${idParams.id}`,
+          optionGet
+        );
+        setCategory(response.category_name);
+        setDescription(response.category_description);
+        setIsActive(response.is_active);
+        setId(response.id);
+      } catch (error: any) {
+        alert(error.message);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
     console.log("submitting");
-    const newCategory: Create = {
+    const newCategory: Category = {
       category_name: category,
-      description: description,
+      category_description: description,
       is_active: isActive,
+      id: id,
     };
 
     const option = {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
       body: JSON.stringify(newCategory),
     };
 
-    
-try {
     const response = await FetchData(
-      "https://library-crud-sample.vercel.app/api/category/create",
+      "https://library-crud-sample.vercel.app/api/category/update",
       option
     );
-    if (response.ok) {
-      alert("Category created successfully");
+    if (response.status === 200) {
+      alert("Category edited successfully");
       navigate("/insideLogin");
-    }} catch (error) {
-      console.error(error);
     }
   };
 
   return (
-    <Formik
-      initialValues={{ category_name: "", description: "" }}
-      onSubmit={(values: any, actions: any) => {
-        handleSubmit(values);
-        actions.resetForm();
-      }}
-    >
-      <Form className="max-w mt-5 mb-5">
-        <Field
-          type="text"
-          name="category_name"
-          placeholder="Category Name"
-          className="border border-gray-400 rounded-sm px-2 py-1 m-5 text-black"
-          onchange={(e: any) => {
-            setCategory(e.target.value);
-          }}
-        />
+    <>
+      <h1>Edit Category</h1>
+      <Formik
+        initialValues={{
+          category_name: "",
+          description: "",
+          is_active: false,
+        }}
+        onSubmit={(values: any, actions: any) => {
+          handleSubmit(values);
+          actions.resetForm();
+        }}
+      >
+        <Form className="max-w mt-5 mb-5">
+          <Field
+            type="text"
+            name="category_name"
+            placeholder="Category Name"
+            className="border border-gray-400 rounded-sm px-2 py-1 m-5 text-black"
+            onchange={(e: any) => {
+              setCategory(e.target.value);
+            }}
+            value={category}
+          />
 
-        <Field
-          type="text"
-          name="description"
-          placeholder="Description"
-          className="border border-gray-400 rounded-sm px-2 py-1 mr-2 text-black"
-          onchange={(e: any) => {
-            setDescription(e.target.value);
-          }}
-        />
-        <Field
-          type="checkbox"
-          name="is_active"
-          className="border border-gray-400 rounded-sm px-2 py-1 mr-2 text-black w-8 h-10"
-          onchange={(e: any) => {
-            setIsActive(e.target.value);
-          }}
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-sm mt 2"
-        >
-          Create
-        </button>
-      </Form>
-    </Formik>
+          <Field
+            type="text"
+            name="description"
+            placeholder="Description"
+            className="border border-gray-400 rounded-sm px-2 py-1 mr-2 text-black"
+            onchange={(e: any) => {
+              setDescription(e.target.value);
+            }}
+            value={description}
+          />
+          <Field
+            type="checkbox"
+            name="is_active"
+            className="border border-gray-400 rounded-sm px-2 py-1 mr-2 text-black w-8 h-10"
+            onchange={(e: any) => {
+              setIsActive(e.target.value);
+            }}
+            checked={isActive}
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-sm mt 2"
+          >
+            Update
+          </button>
+        </Form>
+      </Formik>
+    </>
   );
 };
 
-export default Create;
+export default EditCategory;

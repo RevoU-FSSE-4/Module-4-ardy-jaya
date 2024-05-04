@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ProfileContext } from "./Profile";
+import EditCategory from "./editCategory";
 
 interface Category {
   id: string;
@@ -44,10 +45,7 @@ const InsideLogin: React.FC = () => {
   
   
 
-  const gotoEdit = (id: string) => {
-    navigate(`/editCategory/${id}`);
 
- 
   const updateCategory = async (id: string) => {
     try {
       const response = await axios.put(
@@ -79,8 +77,8 @@ const InsideLogin: React.FC = () => {
 
   return (
     <>
-  <h1>Inside Login</h1>
-<h1>Email: {email}</h1>
+      <h1>Inside Login</h1>
+      <h1>Email: {email}</h1>
       <button onClick={() => navigate("/newCategory")} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Add To Do
       </button>
@@ -95,7 +93,7 @@ const InsideLogin: React.FC = () => {
               {values.is_active ? "Active" : "Not Active"}
               <div className="mt-3">
                 <button
-                 onClick={() => navigate("/editCategory")}
+                 onClick={() => navigate(`/editCategory/${values.id}`)}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded-sm mr-2"
                 >
                   Edit
