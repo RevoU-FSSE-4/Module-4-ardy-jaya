@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "newsapi": "^2.4.1",
+    "react-scripts": "^5.0.1"
+  }
+}
