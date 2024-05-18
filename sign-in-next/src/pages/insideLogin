@@ -1,0 +1,10 @@
+import InsideLogin from '../components/InsideLogin';
+import PrivateRoute from '../components/PrivateRoute';
+
+export default function InsideLoginPage() {
+  return (
+    <PrivateRoute>
+      <InsideLogin />
+    </PrivateRoute>
+  );
+}

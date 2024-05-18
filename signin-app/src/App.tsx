@@ -31,7 +31,6 @@ function App() {
         <header className="App-header">
           <h1>Happening Now...</h1>
           <hr />
-
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
